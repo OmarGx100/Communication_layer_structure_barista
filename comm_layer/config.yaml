@@ -1,0 +1,127 @@
+# Communication Layer Configuration
+
+# Security Settings
+security:
+  api_key_header: "X-API-Key"
+  api_keys:
+    - "order-screen-1-key"
+    - "order-screen-2-key"
+
+# HTTP Server Configuration
+http_server:
+  host: "0.0.0.0"
+  port: 8000
+  workers: 2
+  timeout: 30
+
+# Transport Endpoints
+transports:
+  # Ordering Screens (HTTP)
+  ordering_screens:
+    type: "http_server"
+    endpoints:
+      - path: "/order"
+        method: "POST"
+        concurrent_requests: 2
+    retry_policy:
+      max_attempts: 3
+      backoff_factor: 2.0
+      initial_delay: 1.0
+
+  # Robot Arm (ROS2)
+  robot_arm:
+    type: "ros2"
+    node_name: "robot_arm_client"
+    topics:
+      state_request: "/robot_arm/state"
+      state_response: "/robot_arm/state_response"
+      work_request: "/robot_arm/work"
+      work_ack: "/robot_arm/work_ack"
+      work_complete: "/robot_arm/work_complete"
+      component_alert: "/robot_arm/component_alert"
+    retry_policy:
+      max_attempts: 5
+      backoff_factor: 1.5
+      initial_delay: 0.5
+      timeout: 10.0
+
+  # Database Service (HTTP)
+  database:
+    type: "http_client"
+    base_url: "http://database-service:8080"
+    endpoints:
+      customer_lookup: "/customer/{order_id}"
+      menu_disable: "/menu/disable"
+    retry_policy:
+      max_attempts: 3
+      backoff_factor: 2.0
+      initial_delay: 1.0
+      timeout: 5.0
+
+  # Sound System (Local OS)
+  sound_system:
+    type: "local_os"
+    player_command: "mpv"
+    audio_files:
+      order_complete: "/audio/order_complete.mp3"
+      error_alert: "/audio/error_alert.mp3"
+    retry_policy:
+      max_attempts: 2
+      backoff_factor: 1.0
+      initial_delay: 0.5
+
+  # Serving Units (ROS2)
+  serving_units:
+    type: "ros2"
+    node_name: "serving_unit_client"
+    services:
+      open_unit: "/serving_unit/open"
+    retry_policy:
+      max_attempts: 3
+      backoff_factor: 1.5
+      initial_delay: 0.5
+      timeout: 5.0
+
+  # Android Screen (ROS2)
+  android_screen:
+    type: "ros2"
+    node_name: "android_screen_client"
+    topics:
+      customer_info: "/android_screen/customer_info"
+      serving_units: "/android_screen/serving_units"
+    retry_policy:
+      max_attempts: 3
+      backoff_factor: 1.5
+      initial_delay: 0.5
+      timeout: 3.0
+
+  # Notification System (SMS)
+  notifications:
+    type: "sms"
+    provider: "abstract"  # No concrete implementation
+    retry_policy:
+      max_attempts: 3
+      backoff_factor: 2.0
+      initial_delay: 2.0
+      timeout: 10.0
+
+# Dead Letter Queue Configuration
+dead_letter_queue:
+  ros2_failures:
+    topic: "/dlq/ros2_failures"
+    max_retries: 3
+    storage: "memory"  # Could be extended to file/database
+
+# Logging Configuration
+logging:
+  level: "INFO"
+  format: "json"
+  output: "stdout"
+  include_timestamp: true
+  include_correlation_id: true
+
+# Performance Settings
+performance:
+  max_concurrent_orders: 10
+  order_timeout: 60.0
+  health_check_interval: 30.0 
