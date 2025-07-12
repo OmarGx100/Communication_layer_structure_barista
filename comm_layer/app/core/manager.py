@@ -13,6 +13,7 @@ import structlog
 
 from .transport import Transport, TransportConfig, TransportType, TransportFactory, RetryPolicy
 from .logger import get_logger
+from .transport_registry import register_all_transports, get_registered_transports
 
 logger = get_logger(__name__)
 
@@ -82,6 +83,13 @@ class CommunicationManager:
         Creates and initializes all configured transports.
         """
         self.logger.info("Initializing Communication Manager")
+        
+        # Ensure all transports are registered
+        register_all_transports()
+        
+        # Log registered transports for debugging
+        registered_transports = get_registered_transports()
+        self.logger.info(f"Registered transports: {list(registered_transports.keys())}")
         
         # Create transport configurations
         transport_configs = self._create_transport_configs()

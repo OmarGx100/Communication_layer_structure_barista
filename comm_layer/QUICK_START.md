@@ -24,6 +24,11 @@ This guide will help you get the Communication Layer up and running quickly.
    python -c "import fastapi, rclpy, structlog; print('Dependencies installed successfully!')"
    ```
 
+4. **Test transport registration:**
+   ```bash
+   python test_transport_registration.py
+   ```
+
 ## Configuration
 
 The system is pre-configured with a `config.yaml` file that includes:
@@ -198,12 +203,21 @@ curl http://localhost:8000/health | jq
 
 ## Development
 
+### Transport Registration System
+
+The Communication Layer uses a factory pattern for transport creation. All transport classes must register themselves with the `TransportFactory`:
+
+1. **Automatic Registration**: Transport classes call `TransportFactory.register()` at module load time
+2. **Registry Module**: `app/core/transport_registry.py` ensures all transports are imported and registered
+3. **Factory Creation**: `TransportFactory.create()` creates instances based on configuration
+
 ### Adding New Transports
 
 1. Create transport class inheriting from `Transport`
 2. Implement required methods: `initialize()`, `shutdown()`, `is_healthy()`
-3. Register with `TransportFactory.register()`
-4. Add configuration to `config.yaml`
+3. Add `TransportFactory.register(TransportType.YOUR_TYPE, YourTransportClass)` at module level
+4. Add import to `app/core/transport_registry.py`
+5. Add configuration to `config.yaml`
 
 ### Extending the API
 

@@ -10,8 +10,8 @@ from typing import Any, Dict, Optional, Callable
 from dataclasses import dataclass
 from enum import Enum
 
-from ..core.transport import Transport, TransportConfig, TransportType, TransportError
-from ..core.logger import get_logger
+from app.core.transport import Transport, TransportConfig, TransportType, TransportError, TransportFactory
+from app.core.logger import get_logger
 
 logger = get_logger(__name__)
 
@@ -372,4 +372,4 @@ class ROS2RobotArmTransport(Transport):
             self.logger.error(f"Error handling component alert: {e}")
 
 # Register with transport factory
-TransportFactory.register(TransportType.ROS2, ROS2RobotArmTransport) 
+TransportFactory.register(TransportType.ROS2, ROS2RobotArmTransport)

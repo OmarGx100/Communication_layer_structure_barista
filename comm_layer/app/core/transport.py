@@ -169,6 +169,20 @@ class TransportFactory:
         """
         transport_class = cls._transport_classes.get(config.transport_type)
         if not transport_class:
-            raise ValueError(f"Unknown transport type: {config.transport_type}")
+            available_types = list(cls._transport_classes.keys())
+            raise ValueError(
+                f"Unknown transport type: {config.transport_type}. "
+                f"Available types: {available_types}"
+            )
         
-        return transport_class(config) 
+        return transport_class(config)
+    
+    @classmethod
+    def list_registered_transports(cls) -> Dict[TransportType, type]:
+        """
+        Get all registered transport classes.
+        
+        Returns:
+            Dictionary of registered transport types and their classes
+        """
+        return cls._transport_classes.copy() 

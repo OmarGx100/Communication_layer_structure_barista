@@ -13,6 +13,7 @@ import yaml
 import uvicorn
 
 from .core.logger import setup_logging, get_logger
+from .core.transport_registry import register_all_transports
 from .core.manager import CommunicationManager
 from .http.ordering import OrderingAPI
 

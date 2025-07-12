@@ -9,8 +9,8 @@ import asyncio
 from typing import Any, Dict, List, Optional
 from dataclasses import dataclass
 
-from ..core.transport import Transport, TransportConfig, TransportType, TransportError, TransportFactory
-from ..core.logger import get_logger
+from app.core.transport import Transport, TransportConfig, TransportType, TransportError, TransportFactory
+from app.core.logger import get_logger
 
 logger = get_logger(__name__)
 
